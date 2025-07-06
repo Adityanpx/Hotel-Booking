@@ -11,16 +11,14 @@ const app = express();
 app.use(cors());
 app.use(clerkMiddleware());
 
-app.post(
-  '/api/clerk/webhook',
-  express.raw({ type: 'application/json' }),
-  clerkWebhooks
-);
+// Raw body for webhooks
+app.post('/api/clerk/webhook', express.raw({ type: 'application/json' }), clerkWebhooks);
 
+// For other routes
 app.use(express.json());
 
 app.get('/api', (req, res) => {
-  res.send('API is working');
+  res.send('API is working 🚀');
 });
 
 export default app;
