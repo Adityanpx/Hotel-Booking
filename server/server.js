@@ -1,27 +1,30 @@
-import express from "express"
+import express from "express";
 import "dotenv/config";
 import cors from "cors";
 import connectDB from "./configs/db.js";
-import { clerkMiddleware } from '@clerk/express'
-import { clerkWebhooks } from "./controlers/clerkwebhooks.js";
+import { clerkMiddleware } from "@clerk/express";
+import { clerkWebhooks } from "./controlers/clerkwebhooks.js";   // keep this path
 
-connectDB()
-const app = express()
-app.use(cors()) // Enable Cross-Origin Resource Sharing
+connectDB();
+const app = express();
 
-// Middleware
+app.use(cors());
+app.use(clerkMiddleware());          // ✅ Clerk auth on every request
+
+/* ---------- Clerk webhook: RAW body BEFORE JSON parser ---------- */
+app.post(
+  "/api/clerk",                      // ⬅︎  keep this exactly the same as Clerk endpoint
+  express.raw({ type: "application/json" }),
+  clerkWebhooks
+);
+/* ---------------------------------------------------------------- */
+
+// JSON parser for every other route (after webhook!)
 app.use(express.json());
-app.use(clerkMiddleware())
 
-//API to listen clerk WebHooks
-app.use("/api/clerk", clerkWebhooks)
+app.get("/", (req, res) => {
+  res.send("Api is working...");
+});
 
-app.get('/' , (req,res) => {
-    res.send("Api is working")
-})
-
-const PORT  = process.env.PORT || 3000
-
-app.listen(PORT , ()=> {
-    console.log(`server is running on port ${PORT}`);
-})
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
