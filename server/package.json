@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node api/index.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "dependencies": {
     "@clerk/express": "^1.7.4",
