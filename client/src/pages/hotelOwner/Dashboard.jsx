@@ -1,9 +1,47 @@
-import React, { useState } from 'react'
-import { assets, dashboardDummyData } from '../../assets/assets'
+import React, { useEffect, useState } from 'react'
+import { assets } from '../../assets/assets'
 import Title from '../../components/Title'
+import { useAppContext } from '../../context/AppContext'
 
 const Dashboard = () => {
-    const [dashboarddata , setDashboardData] = useState(dashboardDummyData)
+
+  const {currency , user, getToken , toast , axios} = useAppContext();
+
+    const [dashboardData , setDashboardData] = useState({
+      bookings: [],
+      totalBookings:0,
+      totalRevenue: 0,
+    })
+
+     const fetchDashboardData = async () => {
+          try {
+            const { data } = await axios.get(
+              '/api/bookings/hotel',
+              {
+                headers: {
+                  Authorization: `Bearer ${await getToken()}`,
+                },
+              }
+            );
+        
+            if (data.success) {
+              toast.success(data.message);
+              setDashboardData(data.dashboardData); // Refresh the room list
+            } else {
+              toast.error(data.message);
+            }
+          } catch (error) {
+            toast.error(error.message);
+          }
+        };
+        
+    
+        useEffect(()=>{
+          if(user){
+            fetchDashboardData();
+          }
+        },[user]);
+    
   return (
     <div className='p-4 ml-4'>
     <Title
@@ -23,7 +61,7 @@ const Dashboard = () => {
         />
         <div className='flex flex-col sm:ml-4 font-medium'>
           <p className='text-blue-500 text-lg '>Total Bookings</p>
-          <p className='text-neutral-400 text-base '>{dashboarddata.totalBookings}</p>
+          <p className='text-neutral-400 text-base '>{dashboardData.totalBookings}</p>
         </div>
       </div>
 
@@ -36,7 +74,7 @@ const Dashboard = () => {
         />
         <div className='flex flex-col sm:ml-4 font-medium'>
           <p className='text-blue-500 text-lg '>Total Revenue</p>
-          <p className='text-neutral-400 text-base '> $ {dashboarddata.totalRevenue}</p>
+          <p className='text-neutral-400 text-base '> {currency}  {dashboardData.totalRevenue}</p>
         </div>
       </div>
       {/* Example: <div>Total Revenue</div> */}
@@ -55,7 +93,7 @@ const Dashboard = () => {
       </tr>
     </thead>
     <tbody className='text-sm'>
-        {dashboarddata.bookings.map((item , index) => (
+        {dashboardData.bookings.map((item , index) => (
             <tr key={index}>
                 <td className='py-3 px-4 text-gray-700 border-t border-gray-300'>
                     {item.user.username}
@@ -64,7 +102,7 @@ const Dashboard = () => {
                     {item.room.roomType}
                 </td>
                 <td className='py-3 px-4 text-center text-gray-700 border-t border-gray-300'>
-                     $ {item.totalPrice}
+                     {currency} {item.totalPrice}
                 </td>
                 <td className='py-3 px-4 flex border-t border-gray-300'>
                     <button className={`py-1 px-3 text-xs rounded-lg ${item.isPaid ? 'bg-green-200 text-green-700' : 'bg-amber-200 text-yellow-600'}`}>
