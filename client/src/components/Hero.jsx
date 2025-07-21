@@ -35,7 +35,7 @@ const Hero = () => {
 
   return (
     <div className='flex flex-col items-start justify-center p-6 text-white px-6 md:px-16 lg:px-24 xl:px-32
-    bg-[url("src/assets/heroImage.jpeg")] bg-no-repeat bg-cover bg-center h-screen'>
+    bg-[url("/heroImage.jpeg")] bg-no-repeat bg-cover bg-center h-screen'>
       <p className='rounded-full mt-20 bg-green-600 px-3.5 py-1'>Ultimate Hotel Experience</p>
       <h1 className=' text-2xl md:text-5xl md:leading-[56px] font-bold md:font-extrabold max-w-xl mt-4'>Discover your perfect destination</h1>
       <p className='max-w-130 mt-2 text-sm md:text-base'>
